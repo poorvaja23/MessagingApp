@@ -62,20 +62,44 @@ public class FriendlyPingServer {
 
     @Override
     public void onMessage(String from, JsonObject jData) {
-      if (jData.has("action")) {
+      logger.info("Server has recievedd a message from client");
+      if (jData.has("action"))
+     {
         String action = jData.get("action").getAsString();
-        if (action.equals(REGISTER_NEW_CLIENT)) {
+        if (action.equals(REGISTER_NEW_CLIENT)) 
+        {
           registerNewClient(jData);
-        } else if (action.equals("ping_client")) {
+        } 
+        else if (action.equals(PING_CLIENT)) 
+        {
+          string profile = jData.get("profile").getAsString();
           String toToken = jData.get("to").getAsString();
           String senderToken = jData.get("sender").getAsString();
-          if (StringUtils.isNotEmpty(toToken) && StringUtils.isNotEmpty(senderToken)) {
+          // TODO: Call XTU and apply profile no sent by client
+          if (StringUtils.isNotEmpty(toToken) && StringUtils.isNotEmpty(senderToken)) 
+          {
             pingClient(toToken, senderToken);
-          } else {
+          } 
+          else 
+          {
             logger.info("Unable to ping unless to and sender tokens are available.");
           }
         }
-      } else {
+        else if (action.equals(APPLY_PROFILE)) 
+        {
+          //String profileNo = jData.get("profile").getAsString();
+          String toToken = jData.get("to").getAsString();
+          String senderToken = jData.get("sender").getAsString();
+           if (StringUtils.isNotEmpty(toToken) && StringUtils.isNotEmpty(senderToken))
+            sendAccept(toToken, senderToken);
+          else 
+          {
+            logger.info("Unable to ping unless to and sender tokens are available.");
+          }
+        }
+      } 
+      else 
+      {
         logger.info("No action found. Message received missing action.");
       }
     }
@@ -91,6 +115,7 @@ public class FriendlyPingServer {
   private static final String BROADCAST_NEW_CLIENT = "broadcast_new_client";
   private static final String SEND_CLIENT_LIST = "send_client_list";
   private static final String PING_CLIENT = "ping_client";
+  private static final String APPLY_PROFILE = "apply_profile";
   // Keys
   private static final String ACTION_KEY = "action";
   private static final String CLIENT_KEY = "client";
@@ -247,6 +272,38 @@ public class FriendlyPingServer {
 
     friendlyGcmServer.send(toToken, jPing);
   }
+
+  private void sendAccept(String toToken, String senderToken) {
+    Client senderClient;
+    // If the server is the recipient of the ping, send ping to sender, otherwise send ping to
+    // toToken.
+    if (toToken.equals(SENDER_ID + "@" + GcmServer.GCM_HOST)) {
+      senderClient = clientMap.get(toToken);
+      toToken = senderToken;
+    } else {
+      senderClient = clientMap.get(senderToken);
+    }
+    JsonObject jPing = new JsonObject();
+
+    JsonObject jData = new JsonObject();
+    jData.addProperty(ACTION_KEY, APPLY_PROFILE);
+    jData.addProperty(SENDER_KEY, senderClient.registrationToken);
+
+    // Create notification that is handled appropriately on the receiving platform.
+    JsonObject jNotification = new JsonObject();
+    jNotification.addProperty("body", "Profile1 has been applied and accepted");
+    jNotification.addProperty("title", PING_TITLE);
+    jNotification.addProperty("icon", PING_ICON);
+    jNotification.addProperty("sound", "default");
+    jNotification.addProperty("click_action", CLICK_ACTION);
+
+    jPing.add(DATA_KEY, jData);
+    jPing.add("notification", jNotification);
+
+    friendlyGcmServer.send(toToken, jPing);
+  }
+
+
 
   public static void main(String[] args) {
     // Initialize FriendlyPingServer with appropriate API Key and SenderID.
