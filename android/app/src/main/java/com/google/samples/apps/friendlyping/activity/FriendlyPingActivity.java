@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,7 +49,7 @@ import static com.google.samples.apps.friendlyping.model.TrackingEvent.USER_LOGO
 public class FriendlyPingActivity extends AppCompatActivity {
 
     private static final String TAG = "FriendlyPingActivity";
-
+    public final static String EXTRA_MESSAGE = "com.mycompany.myfirstapp.MESSAGE";
     /* RequestCode for resolutions involving sign-in */
     private static final int REQUEST_CODE_SIGN_IN = 9001;
     /* Keys for persisting instance variables in savedInstanceState */
@@ -65,6 +66,7 @@ public class FriendlyPingActivity extends AppCompatActivity {
     private boolean mShouldResolve = false;
     private View mProgressView;
     private View mContentView;
+    private Button mDominatorButton;
 
     private SignInFragment mSignInFragment;
     private FriendlyPingFragment mFriendlyPingFragment;
@@ -75,7 +77,10 @@ public class FriendlyPingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friendly_ping);
         mProgressView = findViewById(R.id.progress);
         mContentView = findViewById(R.id.fragment);
+        mDominatorButton = (Button) findViewById(R.id.Dominatorbutton);
+        mDominatorButton.setOnClickListener(dominatorHandler);
         // Build GoogleApiClient with access to basic profile
+        //this is for the google sign in
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(mConnectionCallbacks)
                 .addOnConnectionFailedListener(mConnectionFailedListener)
@@ -89,6 +94,22 @@ public class FriendlyPingActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString(PreferenceKeys.SENDING_PINGER_TOKEN, pingerToken).apply();
         }
+    }
+
+    private View.OnClickListener dominatorHandler = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+           sendMessage(v);
+        }
+    };
+
+    private void sendMessage(View v) {
+        Intent intent = new Intent(this, CPUOCActivity.class);
+        String message = "myName";
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
     }
 
     @Override

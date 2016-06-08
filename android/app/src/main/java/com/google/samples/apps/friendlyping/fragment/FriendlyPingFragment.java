@@ -44,6 +44,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.samples.apps.friendlyping.AnalyticsHelper;
 import com.google.samples.apps.friendlyping.PingerAdapter;
 import com.google.samples.apps.friendlyping.R;
+import com.google.samples.apps.friendlyping.activity.CPUOCActivity;
 import com.google.samples.apps.friendlyping.constants.IntentExtras;
 import com.google.samples.apps.friendlyping.constants.PingerKeys;
 import com.google.samples.apps.friendlyping.constants.RegistrationConstants;
@@ -61,7 +62,6 @@ import java.util.ArrayList;
  * A fragment that displays a list of {@link Pinger}s, received and sent pings.
  */
 public class FriendlyPingFragment extends Fragment {
-
     private static final String TAG = "FriendlyPingFragment";
     private static final String KEY_PINGERS = "key.pingers";
 
@@ -79,10 +79,18 @@ public class FriendlyPingFragment extends Fragment {
                     return;
                 }
                 Pinger pinger = mPingerAdapter.getItem(position);
-                pingSomeone(pinger);
+                String sharedPreferences = mDefaultSharedPreferences.getString(RegistrationConstants.TOKEN, null);
+                Intent intent = new Intent(getActivity(), CPUOCActivity.class);
+                intent.putExtra("token", pinger.getRegistrationToken());
+                intent.putExtra("shared", sharedPreferences);
+                startActivity(intent);
+
+
+                //pingSomeone(pinger);
             }
         };
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,6 +122,7 @@ public class FriendlyPingFragment extends Fragment {
         filter.addAction(GcmAction.SEND_CLIENT_LIST);
         filter.addAction(GcmAction.BROADCAST_NEW_CLIENT);
         filter.addAction(GcmAction.PING_CLIENT);
+        filter.addAction(GcmAction.APPLY_PROFILE);
         LocalBroadcastManager.getInstance(getActivity())
                 .registerReceiver(mRegistrationBroadcastReceiver, filter);
     }
@@ -186,11 +195,12 @@ public class FriendlyPingFragment extends Fragment {
     private void pingSomeone(Pinger pinger) {
         final Context context = getActivity();
         Bundle data = new Bundle();
-        data.putString(PingerKeys.ACTION, GcmAction.PING_CLIENT);
+        data.putString(PingerKeys.ACTION, GcmAction.PING_CLIENT);   //key/value pairs to be send- value always string
         data.putString(PingerKeys.TO, pinger.getRegistrationToken());
         data.putString(PingerKeys.SENDER,
                 mDefaultSharedPreferences.getString(RegistrationConstants.TOKEN, null));
         try {
+            //send(String to, String msgId, Bundle data)
             GoogleCloudMessaging.getInstance(context)
                     .send(FriendlyPingUtil.getServerUrl(getActivity()),
                             String.valueOf(System.currentTimeMillis()), data);

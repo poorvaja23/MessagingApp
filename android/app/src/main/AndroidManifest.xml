@@ -45,6 +45,11 @@
                 <!-- [END register_for_notification_clicks] -->
             </intent-filter>
         </activity>
+        <activity android:name=".activity.CPUOCActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- START gcm -->
         <receiver

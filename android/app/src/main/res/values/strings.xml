@@ -23,4 +23,9 @@
     <string name="play_services_error_fmt">Google Play Services Error: %s</string>
     <string name="description_profile_picture">Profile Picture</string>
     <string name="test_banner_ad_unit_id">12</string>
+    <string name="oc1">OC1</string>
+    <string name="oc2">OC2</string>
+    <string name="ocoff">OCoff</string>
+    <string name="Back">Back</string>
+    <string name="Dominator">Dominator</string>
 </resources>

@@ -30,4 +30,6 @@ public class PingerKeys {
     public static final String ACTION = "action";
     public static final String SENDER = "sender";
     public static final String TO = "to";
+
+    public static final String PROFILE = "profile";
 }

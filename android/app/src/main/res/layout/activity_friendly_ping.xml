@@ -33,4 +33,11 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <Button
+        android:layout_width="134dp"
+        android:layout_height="wrap_content"
+        android:text="@string/Dominator"
+        android:id="@+id/Dominatorbutton"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp" />
 </android.support.design.widget.CoordinatorLayout>

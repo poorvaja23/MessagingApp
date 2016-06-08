@@ -27,4 +27,5 @@ public class GcmAction {
     public static final String BROADCAST_NEW_CLIENT = "broadcast_new_client";
     public static final String SEND_CLIENT_LIST = "send_client_list";
     public static final String PING_CLIENT = "ping_client";
+    public static final String APPLY_PROFILE = "apply_profile";
 }
